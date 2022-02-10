@@ -1,11 +1,9 @@
 package com.amityco.videochatroom.chatfragment
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.LiveDataReactiveStreams
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -13,9 +11,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amity.socialcloud.sdk.AmityCoreClient
@@ -23,24 +18,26 @@ import com.amity.socialcloud.sdk.chat.AmityChatClient
 import com.amity.socialcloud.sdk.chat.AmityMessageRepository
 import com.amity.socialcloud.sdk.chat.message.AmityMessage
 import com.amity.socialcloud.sdk.chat.message.AmityMessageLoader
-import com.squareup.picasso.OkHttp3Downloader
-import com.squareup.picasso.Picasso
 import com.amityco.videochatroom.ChatReaction
 import com.amityco.videochatroom.R
 import com.amityco.videochatroom.chatadapter.ChatAdapter
 import com.amityco.videochatroom.chatadapter.ListListener
 import com.ekoapp.ekosdk.message.flag.AmityMessageFlagger
-import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+
+private const val PAGINATION_PRELOAD_THRESHOLD = 1
 
 class ChatHomeFragment() : Fragment(R.layout.chat_list), ListListener {
     private var channelID = ""
     private var userID = ""
     var chatAdapter: ChatAdapter? = null
-    private lateinit var messageQuery: Flowable<List<AmityMessage>>
+    private lateinit var messageLoader: AmityMessageLoader
     private lateinit var channelDisposable: Disposable
+    private lateinit var messagesDisposable: Disposable
+    private lateinit var recycler: RecyclerView
+
     lateinit var amityDisposable: Disposable
 
     companion object {
@@ -55,6 +52,14 @@ class ChatHomeFragment() : Fragment(R.layout.chat_list), ListListener {
         super.onViewCreated(view, savedInstanceState)
         this.channelID = arguments?.getString(CHANNEL_ID_ARG_KEY) ?: ""
         initChatChannel()
+        initChatFragment()
+        joinChannel()
+        if (!channelDisposable.isDisposed) {
+            val messageRepository = AmityChatClient.newMessageRepository()
+            initChatInput(messageRepository)
+            observeMessages(messageRepository)
+            loadFirstPageMessages()
+        }
     }
 
     private fun initChatChannel() {
@@ -73,13 +78,10 @@ class ChatHomeFragment() : Fragment(R.layout.chat_list), ListListener {
                 userID = it.getUserId()
             }
         }
-        initChatFragment()
-        initJoinChannel()
     }
 
-    private fun initJoinChannel(){
+    private fun joinChannel(){
         val channelRepository = AmityChatClient.newChannelRepository()
-        val messageRepository = AmityChatClient.newMessageRepository()
         channelRepository.joinChannel(channelID)
             .doOnError {
                 Log.e("ERROR", it.message.toString())
@@ -87,35 +89,39 @@ class ChatHomeFragment() : Fragment(R.layout.chat_list), ListListener {
             .subscribe().run {
                 channelDisposable = this
             }
-
-        if (!channelDisposable.isDisposed) {
-            initChatInput(messageRepository)
-            initChat(messageRepository)
-        }
     }
 
-    private fun initChat(messageRepository: AmityMessageRepository) {
-        messageQuery = getMessageCollection(messageRepository)
-        messageQuery.subscribe{
-            Log.e("LIST",it.toString())
-            chatAdapter?.submitList(it)
-        }
+    private fun observeMessages(messageRepository: AmityMessageRepository) {
+        //init global message loader to be used in the fragment
+        messageLoader = getMessageLoader(messageRepository)
+        //observe incoming messages
+        messagesDisposable = messageLoader
+            .getResult()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                chatAdapter?.submitList(it)
+            }
     }
 
-    private fun getMessageCollection(messageRepository: AmityMessageRepository): Flowable<List<AmityMessage>> {
+    private fun getMessageLoader(messageRepository: AmityMessageRepository): AmityMessageLoader {
         return  messageRepository.getMessages("63e8cb57-964f-4140-b413-1a67f0fdd652")
             .parentId(null)
             .build()
             .loader()
-            .getResult()
+    }
+
+    private fun loadFirstPageMessages() {
+        messageLoader.load()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext {
-                Log.e("LIST",it.toString())
+            .doOnSubscribe {
+                //first page loading state
             }
-            .doOnError {
-                Log.e("ERROR", it.message.toString())
+            .doOnComplete {
+                //first page loaded state
             }
+            .subscribe()
     }
 
     override fun onPause() {
@@ -133,10 +139,16 @@ class ChatHomeFragment() : Fragment(R.layout.chat_list), ListListener {
     }
 
     private fun initChatFragment() {
-        val recycler = requireView().findViewById<RecyclerView>(R.id.content_recycler)
+        recycler = requireView().findViewById<RecyclerView>(R.id.content_recycler)
         chatAdapter = ChatAdapter(this@ChatHomeFragment)
         recycler.apply {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+                .apply {
+                    stackFromEnd = true
+                    //to observe if the recyclerview hit the top of the screen
+                    //then load the next page
+                    observeScrollingState(this)
+                }
             isNestedScrollingEnabled = false
             adapter = chatAdapter
             onFlingListener = null
@@ -184,6 +196,27 @@ class ChatHomeFragment() : Fragment(R.layout.chat_list), ListListener {
                                 bottomBtn.visibility = View.GONE
                             }
                         }
+                    }
+                }
+            }
+        })
+    }
+
+    private fun observeScrollingState(layoutManager: LinearLayoutManager) {
+        recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+                val isAlmostReachedTop = firstVisibleItem <= PAGINATION_PRELOAD_THRESHOLD
+                val isScrollingUp = dy < 0
+                if (isAlmostReachedTop && isScrollingUp) {
+                    //always check if there are messages to be loaded
+                    if (messageLoader.hasMore()) {
+                        messageLoader.load()
+                            .subscribeOn(Schedulers.io())
+                            .subscribe()
+                    } else {
+                        Log.e("far_inwza_007", "Last page reached")
                     }
                 }
             }

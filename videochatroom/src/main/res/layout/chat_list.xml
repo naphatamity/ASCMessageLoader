@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragmentMatchPlayerContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/chat_text_input_player">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bottomBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:backgroundTint="@android:color/white"
+            android:text="@string/amity_video_sample_text_scroll_down"
+            android:textColor="@color/amity_video_sample_message_color"
+            android:textSize="@dimen/amity_video_sample_scroll_down_text_size"
+            android:visibility="gone"
+            app:iconTint="@color/amity_video_sample_message_color" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/content_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="false"
+            android:padding="5dp" />
+
+    </FrameLayout>
+
+    <include
+        android:id="@+id/chat_text_input_player"
+        layout="@layout/chat_text_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:background="@color/amity_video_sample_text_input_background"
+        android:visibility="visible" />
+
+</RelativeLayout>

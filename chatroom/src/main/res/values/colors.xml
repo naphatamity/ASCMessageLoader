@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>
+    <color name="color_background_balloon_msg">#f4f4f4</color>
+    <color name="wc_blue">#75acc1</color>
+    <color name="amity_video_sample_color_background_reaction">#eeeef0</color>
+    <color name="amity_video_sample_username_color">#555555</color>
+    <color name="amity_video_sample_message_color">#1c1c1c</color>
+    <color name="amity_video_sample_text_input_background">#FFFFFFFF</color>
+</resources>

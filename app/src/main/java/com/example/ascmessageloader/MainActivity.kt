@@ -19,12 +19,12 @@ class MainActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_main)
 
-        AmityCoreClient.login("Farrari")
-            .displayName("Farrari")
+        AmityCoreClient.login("USERID")
+            .displayName("USERID")
             .build()
             .submit()
             .doOnComplete {
-                selectChannel.putExtra("Farrari", "Farrari")
+                selectChannel.putExtra("USERID", "USERID")
                 startActivity(selectChannel)
             }
             .subscribe {

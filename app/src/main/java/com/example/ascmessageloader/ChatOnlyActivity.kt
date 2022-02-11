@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.amityco.videochatroom.chatfragment.ChatHomeFragment
+import com.amityco.chatroom.chatfragment.ChatHomeFragment
 import org.json.JSONObject
 
 class ChatOnlyActivity : AppCompatActivity() {
@@ -34,7 +34,7 @@ class ChatOnlyActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             val chatFrag = newInstance(channelObject, ChatHomeFragment())
-            addFragment(chatFrag, com.amityco.videochatroom.R.id.chatFragment)
+            addFragment(chatFrag, R.id.chatFragment)
         }
 
     }

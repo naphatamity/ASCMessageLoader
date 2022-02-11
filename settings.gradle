@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ASCMessageLoader"
 include ':app'
-include ':videochatroom'
+include ':chatroom'

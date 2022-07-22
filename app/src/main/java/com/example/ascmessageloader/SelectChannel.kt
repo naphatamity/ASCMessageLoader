@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amity.socialcloud.sdk.chat.AmityChatClient
 import com.amity.socialcloud.sdk.chat.channel.AmityChannel
+import com.amity.socialcloud.sdk.chat.channel.AmityChannelFilter
 import com.amity.socialcloud.sdk.chat.channel.AmityChannelRepository
 import com.example.ascmessageloader.chatadapter.ChatAdapter
 import io.reactivex.schedulers.Schedulers
@@ -35,23 +36,8 @@ class SelectChannel : AppCompatActivity(), ListListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_channel)
         user_ID =  intent.getStringExtra(USER_ID)
-        initCreateChannel()
         initChatFragment()
         initChat(channelRepository)
-    }
-
-    private fun initCreateChannel() {
-        val createCHBtn = findViewById<Button>(R.id.createBtn)
-        val chNameEditText = findViewById<EditText>(R.id.chNameEditText)
-        createCHBtn.setOnClickListener {
-            if(chNameEditText.text.isNotEmpty()) {
-                val chName = chNameEditText.text.toString()
-                chNameEditText.text.clear()
-                createChannel(chName)
-            }else{
-                Toast.makeText(this, "Please fill in Channel Name", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     private fun initChat(messageRepository: AmityChannelRepository) {
@@ -66,7 +52,8 @@ class SelectChannel : AppCompatActivity(), ListListener {
     private fun getChannelCollection(channelRepository: AmityChannelRepository): LiveData<PagedList<AmityChannel>> {
         return LiveDataReactiveStreams.fromPublisher(
             channelRepository.getChannels()
-                .conversationType()
+                .all()
+                .filter(AmityChannelFilter.MEMBER)
                 .build()
                 .query()
                 .subscribeOn(Schedulers.io())

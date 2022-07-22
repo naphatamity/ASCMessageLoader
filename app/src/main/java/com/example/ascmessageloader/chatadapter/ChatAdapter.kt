@@ -53,8 +53,6 @@ class ChatAdapter(
     ) {
         holder.itemView.findViewById<TextView>(R.id.chId).text =
             String.format("loading")
-        holder.itemView.findViewById<TextView>(R.id.chName).text =
-            String.format("loading")
     }
 
     private fun addOnClickListener(

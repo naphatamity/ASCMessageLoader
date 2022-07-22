@@ -13,18 +13,16 @@ class MainActivity : AppCompatActivity() {
         val selectChannel = Intent(this, SelectChannel::class.java)
 
         AmityCoreClient.setup(
-            resources.getString(R.string.api_key),
-            AmityRegionalEndpoint.SG,
-            AmityRegionalEndpoint.SG
+            resources.getString(R.string.api_key)
         )
         setContentView(R.layout.activity_main)
 
-        AmityCoreClient.login("USERID")
-            .displayName("USERID")
+        AmityCoreClient.login("USERID_VALUE")
+            .displayName("DISPLAYNAME")
             .build()
             .submit()
             .doOnComplete {
-                selectChannel.putExtra("USERID", "USERID")
+                selectChannel.putExtra("USERID", "USERID_VALUE")
                 startActivity(selectChannel)
             }
             .subscribe {

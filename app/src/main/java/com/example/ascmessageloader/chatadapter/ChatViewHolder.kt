@@ -18,7 +18,6 @@ class ChatViewHolder(itemsView: View) : RecyclerView.ViewHolder(itemsView) {
 
         view.findViewById<TextView>(R.id.chId).text = item.getChannelId()
 
-        view.findViewById<TextView>(R.id.chName).text = item.getDisplayName()
 
     }
 

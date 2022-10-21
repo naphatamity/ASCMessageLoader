@@ -6,11 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".SelectChannel">
 
+    <EditText
+        android:id="@+id/channelID"
+        android:hint="channelName"
+        android:layout_width="match_parent"
+        android:layout_marginRight="100dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/channelListRecycler"/>
+
+    <Button
+        android:id="@+id/createBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SUBMIT"
+        app:layout_constraintStart_toEndOf="@+id/channelID"
+        app:layout_constraintBottom_toTopOf="@+id/channelListRecycler"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/channelListRecycler"
         android:layout_width="409dp"
-        android:layout_height="665dp"
+        android:layout_height="680dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

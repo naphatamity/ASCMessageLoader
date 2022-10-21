@@ -38,6 +38,7 @@ class ChatViewHolder(itemsView: View) : RecyclerView.ViewHolder(itemsView) {
                         view.resources.getString(R.string.message_deleted)
                 }
             }
+            else -> {}
         }
     }
 

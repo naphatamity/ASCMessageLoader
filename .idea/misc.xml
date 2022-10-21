@@ -7,6 +7,13 @@
         <entry key="..\:/Users/napha/AndroidStudioProjects/ASCMessageLoader/app/src/main/res/layout/activity_main.xml" value="0.2726449275362319" />
         <entry key="..\:/Users/napha/AndroidStudioProjects/ASCMessageLoader/app/src/main/res/layout/activity_select_channel.xml" value="0.1" />
         <entry key="..\:/Users/napha/AndroidStudioProjects/ASCMessageLoader/app/src/main/res/layout/channel_list.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_chat_only.xml" value="0.27402954101562504" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_select_channel.xml" value="0.24315643310546878" />
+        <entry key="chatroom/src/main/res/layout/chat_list.xml" value="0.10371376811594203" />
+        <entry key="chatroom/src/main/res/layout/chat_text_input.xml" value="0.10371376811594203" />
+        <entry key="chatroom/src/main/res/layout/item_chat_list.xml" value="0.10371376811594203" />
+        <entry key="chatroom/src/main/res/layout/popup_window_message_reaction.xml" value="0.10371376811594203" />
       </map>
     </option>
   </component>

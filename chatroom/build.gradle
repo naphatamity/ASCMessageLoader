@@ -39,7 +39,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "com.github.AmityCo.Amity-Social-Cloud-SDK-Android:amity-sdk:5.28.0"
+    implementation "com.github.AmityCo.Amity-Social-Cloud-SDK-Android:amity-sdk:5.29.0"
     implementation 'com.jakewharton:butterknife:10.1.0'
     implementation 'androidx.lifecycle:lifecycle-reactivestreams-ktx:2.5.0'
     implementation "com.google.android.exoplayer:exoplayer:2.13.3"

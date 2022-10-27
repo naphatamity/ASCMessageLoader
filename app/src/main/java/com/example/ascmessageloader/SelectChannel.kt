@@ -121,12 +121,14 @@ class SelectChannel : AppCompatActivity(), ListListener {
 
         var chatDisplayName = chatItem.getDisplayName()
         chatItem.getMetadata()?.let { metadataObject ->
-            if(metadataObject.getAsJsonArray("USER_IDS").size() > 1) {
-                metadataObject.getAsJsonArray("USER_IDS").map {
-                    if (!it.asString.equals(
-                            userRepository.getCurrentUser().blockingFirst().getDisplayName()
-                        )
-                    ) chatDisplayName = it.asString
+            if(metadataObject.getAsJsonArray("USER_IDS") != null) {
+                if (metadataObject.getAsJsonArray("USER_IDS").size() > 1) {
+                    metadataObject.getAsJsonArray("USER_IDS").map {
+                        if (!it.asString.equals(
+                                userRepository.getCurrentUser().blockingFirst().getDisplayName()
+                            )
+                        ) chatDisplayName = it.asString
+                    }
                 }
             }
         }
